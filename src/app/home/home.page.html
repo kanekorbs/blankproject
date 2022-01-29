@@ -36,28 +36,28 @@
         </ion-item>
         <ion-item>
           <ion-label>
-            Cerca per incremento di clienti
+            Calcola incremento clientela
           </ion-label>
           <ion-toggle color="primary" [(ngModel)]='incrementoCl'></ion-toggle>
         </ion-item>
         <ion-item>
           <ion-label>
-            AAI
+            AAI(average annual income)
           </ion-label>
           <ion-toggle color="primary" (click)='aaiController()'></ion-toggle>
         </ion-item>
         <ion-item *ngIf='aaihide'>
-          <ion-label position="stacked">AAI</ion-label>
+          <ion-label position="stacked">AAI maggiore di</ion-label>
           <ion-input [(ngModel)]='aai'></ion-input>
         </ion-item>
         <ion-item>
           <ion-label>
-            AMI
+            AMI(average monthly income)
           </ion-label>
           <ion-toggle color="primary" (click)='amiController()'></ion-toggle>
         </ion-item>
         <ion-item *ngIf='amihide'>
-          <ion-label position="stacked">AMI</ion-label>
+          <ion-label position="stacked">AMI maggiore di</ion-label>
           <ion-input [(ngModel)]='ami'></ion-input>
         </ion-item>
         <div class="search-div"> 
