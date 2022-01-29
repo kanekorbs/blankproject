@@ -1,20 +1,131 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header>
+  <ion-toolbar color="tertiary">
     <ion-title>
-      Blank
+
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="nothing-search" >
+    <ion-icon name="search-outline" id="search-icon"></ion-icon>
+    <h1 id="h1-search">Nothing search</h1>
+  </div>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div class="center">
+    <div class="forty">
+      <div class="tools">
+        <ion-icon name="search-circle-outline" [ngStyle]="{'color': colorTool1}" class="icon-tools1" (click)='toolOne()'></ion-icon>
+        <ion-icon name="bar-chart-outline" class="icon-tools" [ngStyle]="{'color': colorTool2}" (click)='toolTwo()'></ion-icon>
+        <ion-icon name="locate-outline" class="icon-tools" [ngStyle]="{'color': colorTool3}" (click)='toolThird()'></ion-icon>
+      </div>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+      <!-- FIRST TOOL PAGE -->
+      <div *ngIf='toolone'>
+        <ion-item>
+          <ion-label>
+            Cerca per Città
+          </ion-label>
+          <ion-toggle color="primary" (click)='posController()'></ion-toggle>
+        </ion-item>
+        <ion-item *ngIf='Posizione'>
+          <ion-label position="stacked">Città</ion-label>
+          <ion-input [(ngModel)]='city'></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            Cerca per incremento di clienti
+          </ion-label>
+          <ion-toggle color="primary" [(ngModel)]='incrementoCl'></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            AAI
+          </ion-label>
+          <ion-toggle color="primary" (click)='aaiController()'></ion-toggle>
+        </ion-item>
+        <ion-item *ngIf='aaihide'>
+          <ion-label position="stacked">AAI</ion-label>
+          <ion-input [(ngModel)]='aai'></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            AMI
+          </ion-label>
+          <ion-toggle color="primary" (click)='amiController()'></ion-toggle>
+        </ion-item>
+        <ion-item *ngIf='amihide'>
+          <ion-label position="stacked">AMI</ion-label>
+          <ion-input [(ngModel)]='ami'></ion-input>
+        </ion-item>
+        <div class="search-div"> 
+          <ion-button color="primary" class="search" (click)='searchFor()'>Search</ion-button>
+        </div>
+      </div>
+
+      <!-- SECOND TOOL PAGE -->
+      <div *ngIf='toolsecond'></div>
+
+      <!-- THIRD TOOL PAGE -->
+      <div *ngIf='toolthird'></div>
+    </div>
+    <div class="sixty" *ngFor='let doc of hotel'>
+      <ion-card>
+        <ion-card-header>
+          <!--<ion-card-subtitle>Card Subtitle</ion-card-subtitle>-->
+          <ion-card-title>{{ doc.name }}
+            <div>
+              <ion-icon  *ngFor="let count of doc.star" name="star-outline"  color="warning"></ion-icon>
+            </div>
+          </ion-card-title>
+        </ion-card-header>
+      
+        <ion-card-content>
+          <div class="div-cento-card">
+            <h2>
+              REGIONE: 
+            </h2>
+            <h3>
+              {{ doc.region }}
+            </h3>
+          </div>
+          <div class="div-cento-card">
+            <h2>
+              CITTA': 
+            </h2>
+            <h3>
+              {{ doc.city }}
+            </h3>
+          </div>
+          <div class="div-cento-card">
+            <h2>
+              AMI: 
+            </h2>
+            <h3>
+              {{ doc.ami }}
+            </h3>
+          </div>
+          <div class="div-cento-card">
+            <h2>
+              AAI: 
+            </h2>
+            <h3>
+              {{ doc.aai }}
+            </h3>
+          </div>
+          <div class="div-cento-card-FLEX" *ngIf='findForIncrement'>
+            <h2>
+              INCREMENTO CLIENTI: 
+            </h2>
+            <ion-img [src]='imageIncrement'></ion-img>
+            <h3>
+              {{ doc.valori }} %
+            </h3>
+          </div>
+        </ion-card-content>
+      </ion-card>      
+    </div>  
   </div>
 </ion-content>

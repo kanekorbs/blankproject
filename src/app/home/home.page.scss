@@ -1,27 +1,146 @@
-#container {
-  text-align: center;
+ion-toolbar {
+  z-index: 2;
+}
 
+.center {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-content: flex-start;
+  row-gap: 20px;
+  flex-wrap: wrap;
+  padding-left:35%;
+  padding-right: 5%;
+  padding-top:5px;
+  background-color: rgb(255, 255, 255);
+}
+.forty {
+  width: 30%;
+  box-shadow:1px 1px 16px 1px rgb(75, 75, 75);
+  height: 100%;
+  z-index: 1;
+  position: fixed;
+  top: 60px;
+  left: 0px;
+  background-color: rgb(255, 255, 255);
+}
+.tools {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-around;
+  background-color: rgb(255, 255, 255);
+  align-items: center;
+  border-bottom: 1px solid rgb(160, 157, 157);
+}
+.sixty {
+  height: fit-content;
+  width: 100%;
+}
+
+.div-cento {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  justify-content: space-between;
+}
+
+.input-item {
+  width: 45%;
+}
+
+.search-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.search {
+  width: 60%;
+}
+.find-div {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 10px;
+  background-color: rgb(255, 255, 255);
+  border-radius:1.7em;
+}
+.div-cento-card {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  justify-content: flex-start;
+  justify-items: baseline;
+}
+.div-cento-card-FLEX {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 20px;
+  justify-content: flex-start;
+  justify-items: baseline;
+}
+.div-cento-card-FLEX > ion-img {
+  height: 40px;
+  width: auto;
+}
+h2 {
+  font-size:19px;
+  color: black;
+  font-weight: 500;
+}
+h3 {
+  font-size:19px;
+  text-transform: capitalize;
+  color: black;
+  font-weight: 600;
+}
+ion-card:hover {
+  background-color: rgb(197, 228, 236);
+}
+ion-label {
+  font-size: 19px;
+}
+ion-card > ion-card-header > ion-card-title {
+  text-transform: capitalize;
+  display: flex;
+  justify-content: space-between;
+}
+ion-card > ion-card-content {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+.nothing-search {
+  width: auto;
+  height: fit-content;
+  left: 50%;
+  top:15px;
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+#search-icon {
+  font-size: 64px;
+  color: rgb(190, 190, 190);
+}
+#h1-search {
+  color: rgb(190, 190, 190);
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+.icon-tools {
+  font-size: 25px;
 }
 
-#container a {
-  text-decoration: none;
+.icon-tools1 {
+  font-size: 35px;
 }
