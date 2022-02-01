@@ -11,6 +11,10 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'hoteldettails',
+    loadChildren: () => import('./hoteldettails/hoteldettails.module').then( m => m.HoteldettailsPageModule)
+  },
 ];
 
 @NgModule({

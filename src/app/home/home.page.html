@@ -7,71 +7,35 @@
 </ion-header>
 
 <ion-content>
-  <div class="nothing-search" >
-    <ion-icon name="search-outline" id="search-icon"></ion-icon>
-    <h1 id="h1-search">Nothing search</h1>
-  </div>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
   <div class="center">
     <div class="forty">
-      <div class="tools">
-        <ion-icon name="search-circle-outline" [ngStyle]="{'color': colorTool1}" class="icon-tools1" (click)='toolOne()'></ion-icon>
-        <ion-icon name="bar-chart-outline" class="icon-tools" [ngStyle]="{'color': colorTool2}" (click)='toolTwo()'></ion-icon>
-        <ion-icon name="locate-outline" class="icon-tools" [ngStyle]="{'color': colorTool3}" (click)='toolThird()'></ion-icon>
-      </div>
-
-      <!-- FIRST TOOL PAGE -->
-      <div *ngIf='toolone'>
-        <ion-item>
-          <ion-label>
-            Cerca per Città
-          </ion-label>
-          <ion-toggle color="primary" (click)='posController()'></ion-toggle>
-        </ion-item>
-        <ion-item *ngIf='Posizione'>
-          <ion-label position="stacked">Città</ion-label>
-          <ion-input [(ngModel)]='city'></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label>
-            Calcola incremento clientela
-          </ion-label>
-          <ion-toggle color="primary" [(ngModel)]='incrementoCl'></ion-toggle>
-        </ion-item>
-        <ion-item>
-          <ion-label>
-            AAI(average annual income)
-          </ion-label>
-          <ion-toggle color="primary" (click)='aaiController()'></ion-toggle>
-        </ion-item>
-        <ion-item *ngIf='aaihide'>
-          <ion-label position="stacked">AAI maggiore di</ion-label>
-          <ion-input [(ngModel)]='aai'></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label>
-            AMI(average monthly income)
-          </ion-label>
-          <ion-toggle color="primary" (click)='amiController()'></ion-toggle>
-        </ion-item>
-        <ion-item *ngIf='amihide'>
-          <ion-label position="stacked">AMI maggiore di</ion-label>
-          <ion-input [(ngModel)]='ami'></ion-input>
-        </ion-item>
-        <div class="search-div"> 
-          <ion-button color="primary" class="search" (click)='searchFor()'>Search</ion-button>
-        </div>
-      </div>
-
-      <!-- SECOND TOOL PAGE -->
-      <div *ngIf='toolsecond'></div>
-
-      <!-- THIRD TOOL PAGE -->
-      <div *ngIf='toolthird'></div>
+      <agm-map id="mymap" [latitude]="latitude" [zoom]="myzoom" [usePanning]="true" [longitude]="longitude">
+        <agm-marker *ngIf='yourPosition' [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)"></agm-marker>
+        <agm-marker *ngFor='let strutt of struttureH' [label]="{color: 'white', fontWeight: 'bold', fontSize: '12px',  text: strutt.denominazione}" 
+          [latitude]="strutt.latitude" [longitude]="strutt.longitude" (markerClick)='viewHotelDettails(strutt)'>
+        </agm-marker>
+        <agm-circle [latitude]="radiusLat" [longitude]="radiusLong" [radius]="radius" [fillColor]="'red'"
+        [circleDraggable]="false" [editable]="false" 
+        (radiusChange)="event('radiusChange',$event)">
+        </agm-circle>
+      </agm-map>
+      <br><br>
+      <ion-progress-bar *ngIf='showLoader' [type]="'indeterminate'"></ion-progress-bar>
+      <ion-item *ngIf='ionRegioneSelect'>
+        <ion-label>Seleziona Regione</ion-label>
+        <ion-select placeholder="Regioni" [(ngModel)]='regionName' (ionChange)="doRefresh($event)">
+          <ion-select-option *ngFor='let region of allRegion' [value]="region.nome">{{region.nome}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item *ngIf='ionProvinceSelect'>
+        <ion-label>Seleziona per Provincia</ion-label>
+        <ion-select placeholder="Seleziona per provincia" [(ngModel)]='provinceName' (ionChange)="getH()">
+          <ion-select-option *ngFor='let province of allProvinceForRegion' [value]="province.sigla">{{ province.sigla }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <app-mappaitaly></app-mappaitaly>
     </div>
-    <div class="sixty" *ngFor='let doc of hotel'>
+    <div class="sixty" *ngFor='let doc of strutture'>
       <ion-card>
         <ion-card-header>
           <!--<ion-card-subtitle>Card Subtitle</ion-card-subtitle>-->
@@ -85,45 +49,59 @@
         <ion-card-content>
           <div class="div-cento-card">
             <h2>
-              REGIONE: 
+              provincia: 
             </h2>
             <h3>
-              {{ doc.region }}
+              {{ doc.provincia }}
             </h3>
           </div>
           <div class="div-cento-card">
             <h2>
-              CITTA': 
+              nome_comune: 
             </h2>
             <h3>
-              {{ doc.city }}
+              {{ doc.nome_comune }}
             </h3>
           </div>
           <div class="div-cento-card">
             <h2>
-              AMI: 
+              denominazione_struttura: 
             </h2>
             <h3>
-              {{ doc.ami }}
+              {{ doc.denominazione_struttura }}
             </h3>
           </div>
           <div class="div-cento-card">
             <h2>
-              AAI: 
+              categoria:
             </h2>
             <h3>
-              {{ doc.aai }}
+              {{ doc.categoria }}
             </h3>
+          </div>
+          <div class="div-cento-card-icon">
+            <div class="icon-and-result">
+              <ion-icon name="bed-outline"></ion-icon>
+              {{ doc.camere }}
+            </div>
           </div>
           <div class="div-cento-card-FLEX" *ngIf='findForIncrement'>
             <h2>
               INCREMENTO CLIENTI: 
             </h2>
-            <ion-img [src]='imageIncrement'></ion-img>
             <h3>
               {{ doc.valori }} %
             </h3>
           </div>
+          <!--<google-chart *ngIf='findForIncrement' #chart
+          [title]="title"
+          [type]="type"
+          [data]='data'
+          [columns]="columnNames"
+          [options]="options"
+          [width]="width"
+          [height]="height">
+         </google-chart>-->
         </ion-card-content>
       </ion-card>      
     </div>  

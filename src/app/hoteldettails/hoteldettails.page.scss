@@ -1,0 +1,29 @@
+.div-item {
+    width: 100%;
+}
+
+table, td, th {
+    border: 1px solid black;
+}
+
+tr > th {
+    height:40px !important;
+}
+
+tr > td {
+    height: 30px !important;
+}
+
+tr > td {
+    padding-left: 10px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+ion-icon {
+    font-size: 25px;
+    color: white;
+    cursor: pointer;
+}

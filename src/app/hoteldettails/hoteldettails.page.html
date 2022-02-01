@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{ strutt.denominazione_struttura }}</ion-title>
+    <ion-icon name="download-outline" slot="end" (click)='createCsv()'></ion-icon>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf='strutt' class="div-item">
+    <table>
+      <tr>
+        <th *ngIf='strutt.nome_comune'>NOME COMUNE</th>
+        <th *ngIf='strutt.provincia'>PROVINCIA</th>
+        <th *ngIf='strutt.categoria'>CATEGORIA</th>
+        <th *ngIf='strutt.classificazione'>CLASSIFICAZIONE</th>
+      </tr>
+      <tr>
+        <td *ngIf='strutt.nome_comune'>{{ strutt.nome_comune }}</td>
+        <td *ngIf='strutt.provincia'>{{ strutt.provincia }}</td>
+        <td *ngIf='strutt.categoria'>{{ strutt.categoria }}</td>
+        <td *ngIf='strutt.classificazione'>{{ strutt.classificazione }}</td>
+      </tr>
+    </table> 
+    <table>
+      <tr>
+        <th *ngIf='strutt.indirizzo'>INDIRIZZO</th>
+        <th *ngIf='strutt.cap'>CAP</th>
+        <th *ngIf='strutt.frazione'>FRAZIONE</th>
+        <th *ngIf='strutt.localita'>LOCALITA'</th>
+      </tr>
+      <tr>
+        <td *ngIf='strutt.indirizzo'>{{ strutt.indirizzo }}</td>
+        <td *ngIf='strutt.cap'>{{ strutt.cap }}</td>
+        <td *ngIf='strutt.frazione'>{{ strutt.frazione }}</td>
+        <td *ngIf='strutt.localita'>{{ strutt.localita }}</td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <th *ngIf='strutt.tel'>TELEFONO</th>
+        <th *ngIf='strutt.email'>EMAIL</th>
+        <th *ngIf='strutt.fax'>FAX</th>
+        <th *ngIf='strutt.web'>SITO WEB</th>
+      </tr>
+      <tr>
+        <td *ngIf='strutt.tel'>{{ strutt.tel }}</td>
+        <td *ngIf='strutt.email'>{{ strutt.email }}</td>
+        <td *ngIf='strutt.fax'>{{ strutt.fax }}</td>
+        <td *ngIf='strutt.web'>{{ strutt.web }}</td>
+      </tr>
+    </table>              
+  </div>
+</ion-content>

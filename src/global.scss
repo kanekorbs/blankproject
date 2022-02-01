@@ -24,3 +24,14 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+
+.hotel-dettails-modal-css {
+    width: 100% !important;
+}
+
+@media only screen and (min-width: 768px) {
+    .modal-sheet {
+        --width: 100% !important;
+    }
+}
