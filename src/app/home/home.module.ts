@@ -11,6 +11,7 @@ import { GoogleChartsModule } from 'angular-google-charts';
 import { AgmCoreModule } from '@agm/core';
 
 import { MappaitalyComponentModule } from '../components/mappaitaly/mappaitaly.component.module';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   imports: [
@@ -21,7 +22,7 @@ import { MappaitalyComponentModule } from '../components/mappaitaly/mappaitaly.c
     GoogleChartsModule,
     MappaitalyComponentModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyDxkK3dgBZImZK2RDqBI2XuzFFoE_wx4oY'
+      apiKey: environment.apiKey
     })
   ],
   declarations: [HomePage]
