@@ -10,9 +10,9 @@
   <div class="center">
     <div class="forty">
       <agm-map id="mymap" [latitude]="latitude" [zoom]="myzoom" [usePanning]="true" [longitude]="longitude">
-        <agm-marker *ngIf='yourPosition' [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)"></agm-marker>
+        <!--<agm-marker *ngIf='yourPosition' [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)"></agm-marker>-->
         <agm-marker *ngFor='let strutt of struttureH' [label]="{color: 'white', fontWeight: 'bold', fontSize: '12px',  text: strutt.denominazione}" 
-          [latitude]="strutt.latitude" [longitude]="strutt.longitude" (markerClick)='viewHotelDettails(strutt)'>
+          [latitude]="strutt.latitude" [longitude]="strutt.longitude" (markerClick)='findHotelHere(strutt)'>
         </agm-marker>
         <agm-circle [latitude]="radiusLat" [longitude]="radiusLong" [radius]="radius" [fillColor]="'red'"
         [circleDraggable]="false" [editable]="false" 
@@ -33,77 +33,6 @@
           <ion-select-option *ngFor='let province of allProvinceForRegion' [value]="province.sigla">{{ province.sigla }}</ion-select-option>
         </ion-select>
       </ion-item>
-      <app-mappaitaly></app-mappaitaly>
     </div>
-    <div class="sixty" *ngFor='let doc of strutture'>
-      <ion-card>
-        <ion-card-header>
-          <!--<ion-card-subtitle>Card Subtitle</ion-card-subtitle>-->
-          <ion-card-title>{{ doc.name }}
-            <div>
-              <ion-icon  *ngFor="let count of doc.star" name="star-outline"  color="warning"></ion-icon>
-            </div>
-          </ion-card-title>
-        </ion-card-header>
-      
-        <ion-card-content>
-          <div class="div-cento-card">
-            <h2>
-              provincia: 
-            </h2>
-            <h3>
-              {{ doc.provincia }}
-            </h3>
-          </div>
-          <div class="div-cento-card">
-            <h2>
-              nome_comune: 
-            </h2>
-            <h3>
-              {{ doc.nome_comune }}
-            </h3>
-          </div>
-          <div class="div-cento-card">
-            <h2>
-              denominazione_struttura: 
-            </h2>
-            <h3>
-              {{ doc.denominazione_struttura }}
-            </h3>
-          </div>
-          <div class="div-cento-card">
-            <h2>
-              categoria:
-            </h2>
-            <h3>
-              {{ doc.categoria }}
-            </h3>
-          </div>
-          <div class="div-cento-card-icon">
-            <div class="icon-and-result">
-              <ion-icon name="bed-outline"></ion-icon>
-              {{ doc.camere }}
-            </div>
-          </div>
-          <div class="div-cento-card-FLEX" *ngIf='findForIncrement'>
-            <h2>
-              INCREMENTO CLIENTI: 
-            </h2>
-            <h3>
-              {{ doc.valori }} %
-            </h3>
-          </div>
-          <!--<google-chart *ngIf='findForIncrement' #chart
-          [title]="title"
-          [type]="type"
-          [data]='data'
-          [columns]="columnNames"
-          [options]="options"
-          [width]="width"
-          [height]="height">
-         </google-chart>-->
-        </ion-card-content>
-      </ion-card>      
-    </div>  
   </div>
 </ion-content>

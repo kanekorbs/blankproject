@@ -17,6 +17,7 @@ import { Chart } from 'chart.js';
 import { environment } from 'src/environments/environment';
 import { ModalController } from '@ionic/angular';
 import { HoteldettailsPage } from '../hoteldettails/hoteldettails.page';
+import { CompravenduteService } from '../services/compravendute.service';
 
 interface marker {
   lat: number;
@@ -243,26 +244,14 @@ export class HomePage implements OnInit {
   starin3 = false;
   valori: string;
 
-  //charts
+  coords:any[] = []
 
-  //title = 'Average Temperatures of Cities';
-  //type = 'LineChart';
-  //data: any;
-  //columnNames: any;
-  //options = {
-  //  hAxis: {
-  //    title: 'Clienti',
-  //  },
-  //  vAxis: {
-  //    title: 'Year',
-  //  },
-  //};
-  //width = 550;
-  //height = 400;
+  filteredMarkers=[];
 
+  viewStrutturaDettails:string;
   //latitude and longitude of your initial position
-  latitude: number;
-  longitude: number;
+  latitude: number = 41.9027835;
+  longitude: number = 12.4963655;
 
   //this is the value of input Region
   regionName: string;
@@ -277,7 +266,7 @@ export class HomePage implements OnInit {
   yourPosition = true;
   
   // zoom of maps
-  myzoom=8;
+  myzoom=5;
 
   //barra di caricamento
   showLoader:boolean;
@@ -291,184 +280,51 @@ export class HomePage implements OnInit {
   //this array push the correct province of region selected
   allProvinceForRegion = [];
 
-  constructor(private hotelService: HotelserviceService,private firestore: Firestore,private modalCtrl:ModalController) {
-    //this.hotelService.getHotel().subscribe(res => {
-    //  console.log(res.length);
-    //  this.strutture = res;
-    //});
-    this.getPosition();
-    //document.addEventListener('click',function() {
-    //  document.querySelectorAll(".regione").forEach(elem => console.log(elem.getAttribute('data-nome-regione')));
-    //})
+  constructor(private hotelService: HotelserviceService,private firestore: Firestore,private modalCtrl:ModalController,
+    private mapsAPILoader:MapsAPILoader,private compravenduteService:CompravenduteService) {
+      this.compravenduteService.getStruttureCompravendute().subscribe(res => {
+        this.struttureH = res;
+      })
+      this.hotelService.getHotel().subscribe(res => {
+        console.log(res.length)
+        this.coords = res;
+      })
+      //this.getPosition();
   }
 
-  async getPosition() {
-    const coordinates = await Geolocation.getCurrentPosition().then((res) => {
-      console.log('Current position:', res);
-      this.latitude = res.coords.latitude;
-      this.longitude = res.coords.longitude;
-      this.radiusLat = this.latitude;
-      this.radiusLong = this.longitude;
+  //async getPosition() {
+  //  const coordinates = await Geolocation.getCurrentPosition().then((res) => {
+  //    console.log('Current position:', res);
+  //    this.latitude = res.coords.latitude;
+  //    this.longitude = res.coords.longitude;
+  //    this.radiusLat = this.latitude;
+  //    this.radiusLong = this.longitude;
+  //  });
+  //}
+
+  findHotelHere(strutt) {
+    this.mapsAPILoader.load().then(() => {
+      const center = new google.maps.LatLng(strutt.latitude, strutt.longitude);
+      //visualizza i markers nell'area designata in km
+      this.filteredMarkers = this.coords.filter(m => {
+        const markerLoc = new google.maps.LatLng(m.geo_x,m.geo_y);
+        const  distanceInKm = google.maps.geometry.spherical.computeDistanceBetween(markerLoc, center) / 1000
+        if (distanceInKm < 0.7) {
+          this.viewStrutturaDettails = m.id;
+          console.log()
+          return this.viewHotelDettails();
+        }
+      });
     });
   }
 
   ngOnInit() {
-    $('.regione').on('click', function () {
-      $('.regione').removeClass('selected');
-      $(this).addClass('selected');
-      const regione = $(this).data('nome-regione');
-      console.log($(this).data('nome-regione'));
-    });
   }
 
-  async searchFor() {
-    console.log(this.city, this.aai, this.ami, this.incrementoCl);
-    this.hotel.length = 0;
-    if (
-      (this.city != '' && this.aai == undefined) ||
-      (this.aai == '' && this.ami == undefined) ||
-      this.ami == ''
-    ) {
-      if (this.incrementoCl != true) {
-        this.findForIncrement = false;
-        return this.searchforCity();
-      }
-    } else if (
-      (this.city != '' && this.aai != '' && this.ami == undefined) ||
-      this.ami == ''
-    ) {
-      if (this.incrementoCl != true) {
-        this.findForIncrement = false;
-        return this.searchQuery2();
-      }
-    } else if (
-      (this.city != '' && this.ami != '' && this.aai == undefined) ||
-      this.aai == ''
-    ) {
-      if (this.incrementoCl != true) {
-        this.findForIncrement = false;
-        return this.searchQuery3();
-      }
-    } else if (this.city != '' && this.ami != '' && this.aai != '') {
-      if (this.incrementoCl == true) {
-        this.findForIncrement = true;
-        //return this.queryTotal();
-      }
-    }
-  }
-
-  async searchforCity() {
-    const refDoc = collection(this.firestore, 'hoteldata');
-    const q2 = query(refDoc, where('provincia', '==', this.city.toUpperCase()));
-
-    const querySnapshot = await getDocs(q2);
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      this.hotelService.getHotelById(doc.id).subscribe((res) => {
-        console.log(res.location);
-        this.document = res;
-        this.hotel.push(this.document);
-      });
-    });
-  }
-
-  async searchQuery2() {
-    const refDoc = collection(this.firestore, 'hoteldata');
-    const q2 = query(
-      refDoc,
-      where('city', '==', this.city.toLowerCase()),
-      where('aai', '>=', parseFloat(this.aai))
-    );
-
-    const querySnapshot = await getDocs(q2);
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      this.hotelService.getHotelById(doc.id).subscribe((res) => {
-        console.log(res);
-        this.document = res;
-        this.hotel.push(this.document);
-      });
-    });
-  }
-
-  async searchQuery3() {
-    const refDoc = collection(this.firestore, 'hoteldata');
-    const q2 = query(
-      refDoc,
-      where('city', '==', this.city.toLowerCase()),
-      where('ami', '>=', parseFloat(this.ami))
-    );
-
-    const querySnapshot = await getDocs(q2);
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      this.hotelService.getHotelById(doc.id).subscribe((res) => {
-        console.log(res);
-        this.document = res;
-        this.hotel.push(this.document);
-      });
-    });
-  }
-
-  //async queryTotal() {
-  //
-  //  const refDoc = collection(this.firestore, "hoteldata");
-  //  const q2 = query(refDoc,where("city", "==", this.city.toLowerCase()),where("ami",">=",parseFloat(this.ami)));
-  //
-  //  const querySnapshot = await getDocs(q2);
-  //
-  //  querySnapshot.forEach((doc) => {
-  //    // doc.data() is never undefined for query doc snapshots
-  //    this.hotelService.getHotelById(doc.id).subscribe(res => {
-  //      console.log(res);
-  //      var array = res.ncrementCl;
-  //
-  //      for (var i = 0, sum = 0; i < array.length; sum += array[i++]);
-  //      var first = [...array].shift();
-  //      const sottrae = sum - first ;
-  //      const dividi = sottrae / first;
-  //      const moltiplica = dividi * 100;
-  //
-  //      console.log(moltiplica);
-  //
-  //      if(res.aai >= parseFloat(this.aai)) {
-  //        this.document = res;
-  //        this.document.valori = String(moltiplica);
-  //        this.hotel.push(this.document);
-  //      }
-  //    })
-  //  });
-  //}
-
-  posController() {
-    if (this.Posizione == false) {
-      this.Posizione = true;
-    } else {
-      this.Posizione = false;
-      this.city = '';
-    }
-  }
-
-  aaiController() {
-    if (this.aaihide == false) {
-      this.aaihide = true;
-    } else {
-      this.aaihide = false;
-      this.aai = '';
-    }
-  }
-
-  amiController() {
-    if (this.amihide == false) {
-      this.amihide = true;
-    } else {
-      this.amihide = false;
-      this.ami = '';
-    }
-  }
 
   doRefresh(event) {
     console.log('Begin async operation');
+    this.allProvinceForRegion.length = 0;
     this.showProgressBar();
     setTimeout(() => {
       switch (this.regionName) {
@@ -477,48 +333,56 @@ export class HomePage implements OnInit {
           this.longitude = this.AbruzzoLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Abruzzo;
           break;
         case 'Basilicata':
           this.latitude = this.BasilicataLat;
           this.longitude = this.BasilicataLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Basilicata;
           break;
         case 'Calabria':
           this.latitude = this.BasilicataLat;
           this.longitude = this.BasilicataLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Calabria;
           break;
         case 'Campania':
           this.latitude = this.BasilicataLat;
           this.longitude = this.BasilicataLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Campania;
           break;
         case 'Emilia-Romagna':
           this.latitude = this.EmiliaLat;
           this.longitude = this.EmiliaLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.EmiliaRomagna;
           break;
         case 'Friuli-Venezia Giulia':
           this.latitude = this.FriuliLat;
           this.longitude = this.FriuliLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.FriuliVeneziaGiulia;
           break;
         case 'Lazio':
           this.latitude = this.LazioLat;
           this.longitude = this.LazioLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Lazio;
           break;
         case 'Liguria':
           this.latitude = this.LiguriaLat;
           this.longitude = this.LiguriaLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Liguria;
           break;
         case 'Lombardia':
           this.latitude = this.LombardiaLat;
@@ -527,73 +391,84 @@ export class HomePage implements OnInit {
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
           this.allProvinceForRegion = this.Lombardia;
-          console.log(this.allProvinceForRegion);
+          //console.log(this.allProvinceForRegion);
           break;
         case 'Marche':
           this.latitude = this.MarcheLat;
           this.longitude = this.MarcheLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Marche;
           break;
         case 'Molise':
           this.latitude = this.MoliseLat;
           this.longitude = this.MoliseLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Molise;
           break;
         case 'Piemonte':
           this.latitude = this.PiemonteLat;
           this.longitude = this.PiemonteLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Piemonte;
           break;
         case 'Puglia':
           this.latitude = this.PugliaLat;
           this.longitude = this.PugliaLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Puglia;
           break;
         case 'Sardegna':
           this.latitude = this.SardegnaLat;
           this.longitude = this.SardegnaLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Sardegna;
           break;
         case 'Sicilia':
           this.latitude = this.SiciliaLat;
           this.longitude = this.SiciliaLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Sicilia;
           break;
         case 'Toscana':
           this.latitude = this.ToscanaLat;
           this.longitude = this.ToscanaLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Toscana;
           break;
         case 'Trentino-Alto Adige/Südtirol':
           this.latitude = this.trentinoLat;
           this.longitude = this.trentinoLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.TrentinoAltoAdige;
           break;
         case 'Umbria':
           this.latitude = this.UmbriaLat;
           this.longitude = this.UmbriaLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Umbria;
           break;
         case "Valle d'Aosta/Vallée d'Aoste":
           this.latitude = this.ValledaostaLat;
           this.longitude = this.ValledaostaLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.ValledAosta;
           break;
         case 'Veneto':
           this.latitude = this.VenetoLat;
           this.longitude = this.VenetoLong;
           this.radiusLat = this.latitude;
           this.radiusLong = this.longitude;
+          this.allProvinceForRegion = this.Veneto;
           break;
       }
       this.ionProvinceSelect = true;
@@ -609,7 +484,7 @@ export class HomePage implements OnInit {
     this.showProgressBar();
     const refDoc = collection(this.firestore, 'hoteldata');
     if(this.provinceName == 'Tutte le provincie') {
-      const q2 = query(refDoc, where('provincia', '!=', this.provinceName));
+      const q2 = query(refDoc, where('provincia' || 'Provincia', '!=', this.provinceName));
       const querySnapshot = await getDocs(q2);
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
@@ -621,6 +496,8 @@ export class HomePage implements OnInit {
             return this.refreshHotel(event);
         });
       });
+    } else if(this.allProvinceForRegion.length == 0) {
+      return this.refreshHotel(event);
     } else {
       const q2 = query(refDoc, where('provincia', '==', this.provinceName));
       const querySnapshot = await getDocs(q2);
@@ -657,11 +534,11 @@ export class HomePage implements OnInit {
     this.showLoader = false;
   }
 
-  async viewHotelDettails(strutt) {
+  async viewHotelDettails() {
     const modal = await this.modalCtrl.create({
       component: HoteldettailsPage,
       cssClass: 'hotel-dettails-modal-css',
-      componentProps:{id:strutt.id},
+      componentProps:{id:this.viewStrutturaDettails},
       breakpoints:[0,0.5,0.8],
       initialBreakpoint:0.8
     });

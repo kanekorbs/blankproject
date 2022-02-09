@@ -22,7 +22,8 @@ import { environment } from 'src/environments/environment';
     GoogleChartsModule,
     MappaitalyComponentModule,
     AgmCoreModule.forRoot({
-      apiKey: environment.apiKey
+      apiKey: environment.apiKey,
+      libraries: ['geometry']
     })
   ],
   declarations: [HomePage]
