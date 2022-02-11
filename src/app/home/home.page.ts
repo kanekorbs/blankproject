@@ -19,15 +19,6 @@ import { ModalController } from '@ionic/angular';
 import { HoteldettailsPage } from '../hoteldettails/hoteldettails.page';
 import { CompravenduteService } from '../services/compravendute.service';
 
-interface marker {
-  lat: number;
-  lng: number;
-  label?: string;
-  draggable: boolean;
-  content?: string;
-  isShown: boolean;
-  icon: any;
-}
 
 @Component({
   selector: 'app-home',
@@ -35,16 +26,11 @@ interface marker {
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
+  
   strutture = [];
-  //other in html
-  Posizione = false;
-  aaihide = false;
-  amihide = false;
-  findForIncrement = false;
-  incrementoCl: boolean;
-  city: string;
-  aai: string;
-  ami: string;
+  //icon img src
+  segnapostImg:string = '../assets/img/icons8-segnaposto-48.png';
+  CustomarkerIcon:string = '../assets/img/icons8-location-64.png';
 
   checkRegionName: string;
 
@@ -246,7 +232,7 @@ export class HomePage implements OnInit {
 
   coords:any[] = []
 
-  filteredMarkers=[];
+  filteredMarkers:any[]=[];
 
   viewStrutturaDettails:string;
   //latitude and longitude of your initial position
@@ -258,12 +244,12 @@ export class HomePage implements OnInit {
 
   // this is the Radius of circle in map
   radius = 50000;
-  radiusLat = 0;
+  radiusLat= 0;
   radiusLong = 0;
 
   //marker maps
   hotelPosition = false;
-  yourPosition = true;
+  yourPosition = false;
   
   // zoom of maps
   myzoom=5;
@@ -280,6 +266,11 @@ export class HomePage implements OnInit {
   //this array push the correct province of region selected
   allProvinceForRegion = [];
 
+  //default and custom maps
+  defaultMaps:boolean = true;
+  customMaps:boolean = false;
+
+
   constructor(private hotelService: HotelserviceService,private firestore: Firestore,private modalCtrl:ModalController,
     private mapsAPILoader:MapsAPILoader,private compravenduteService:CompravenduteService) {
       this.compravenduteService.getStruttureCompravendute().subscribe(res => {
@@ -292,17 +283,18 @@ export class HomePage implements OnInit {
       //this.getPosition();
   }
 
-  //async getPosition() {
-  //  const coordinates = await Geolocation.getCurrentPosition().then((res) => {
-  //    console.log('Current position:', res);
-  //    this.latitude = res.coords.latitude;
-  //    this.longitude = res.coords.longitude;
-  //    this.radiusLat = this.latitude;
-  //    this.radiusLong = this.longitude;
-  //  });
-  //}
+  async getPosition() {
+    const coordinates = await Geolocation.getCurrentPosition().then((res) => {
+      console.log('Current position:', res);
+      this.latitude = res.coords.latitude;
+      this.longitude = res.coords.longitude;
+      this.radiusLat = this.latitude;
+      this.radiusLong = this.longitude;
+    });
+  }
 
   findHotelHere(strutt) {
+    console.log(strutt.id,strutt.latitude,strutt.longitude)
     this.mapsAPILoader.load().then(() => {
       const center = new google.maps.LatLng(strutt.latitude, strutt.longitude);
       //visualizza i markers nell'area designata in km
@@ -311,7 +303,6 @@ export class HomePage implements OnInit {
         const  distanceInKm = google.maps.geometry.spherical.computeDistanceBetween(markerLoc, center) / 1000
         if (distanceInKm < 0.7) {
           this.viewStrutturaDettails = m.id;
-          console.log()
           return this.viewHotelDettails();
         }
       });
@@ -545,6 +536,11 @@ export class HomePage implements OnInit {
     modal.present();
   }
 
+  placeMarkers() {
+    this.yourPosition = this.yourPosition === false ? true : false;
+    this.defaultMaps = this.defaultMaps === true ? false : true;
+    this.customMaps = this.customMaps === false ? true : false;
+  }
   markerDragEnd($event: any) {
     console.log('lat', $event.latLng.lat()); //to see the latitude in the console
     console.log('lng', $event.latLng.lng()); // to see the longitude in the console
@@ -552,10 +548,24 @@ export class HomePage implements OnInit {
     this.longitude = $event.latLng.lng();
     this.radiusLat = this.latitude;
     this.radiusLong = this.longitude;
+    
+    this.mapsAPILoader.load().then(() => {
+      const center = new google.maps.LatLng(this.latitude, this.longitude);
+      //visualizza i markers nell'area designata in km
+      this.filteredMarkers = this.struttureH.filter(m => {
+        const markerLoc = new google.maps.LatLng(m.latitude,m.longitude);
+        const  distanceInKm = google.maps.geometry.spherical.computeDistanceBetween(markerLoc, center) / 1000
+        if (distanceInKm < 100.0) {
+          return m
+          //return this.viewHotelDettails();
+        }
+      });
+    });
   }
-  event(type, $event) {
-    console.log(type, $event);
-    this.radius = $event;
-    //this.showHideMarkers();
-  }
+  //event(type, $event) {
+  //  console.log(type, $event);
+  //  this.radius = $event;
+  //  //this.showHideMarkers();
+  //}
+  
 }

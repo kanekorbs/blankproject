@@ -9,17 +9,32 @@
 <ion-content>
   <div class="center">
     <div class="forty">
-      <agm-map id="mymap" [latitude]="latitude" [zoom]="myzoom" [usePanning]="true" [longitude]="longitude">
-        <!--<agm-marker *ngIf='yourPosition' [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)"></agm-marker>-->
-        <agm-marker *ngFor='let strutt of struttureH' [label]="{color: 'white', fontWeight: 'bold', fontSize: '12px',  text: strutt.denominazione}" 
+      <!--default maps-->
+      <agm-map id="mymap" *ngIf='defaultMaps' [latitude]="latitude" [zoom]="myzoom" [usePanning]="true" [longitude]="longitude">
+        <agm-marker *ngFor='let strutt of struttureH' 
           [latitude]="strutt.latitude" [longitude]="strutt.longitude" (markerClick)='findHotelHere(strutt)'>
         </agm-marker>
         <agm-circle [latitude]="radiusLat" [longitude]="radiusLong" [radius]="radius" [fillColor]="'red'"
-        [circleDraggable]="false" [editable]="false" 
-        (radiusChange)="event('radiusChange',$event)">
+          [circleDraggable]="false" [editable]="false" >
         </agm-circle>
       </agm-map>
-      <br><br>
+      <!--maps on add custom markers-->
+      <agm-map id="mymap" *ngIf='customMaps' [latitude]="latitude" [zoom]="myzoom" [usePanning]="true" [longitude]="longitude">
+        <agm-marker *ngIf='yourPosition' [latitude]="latitude" [longitude]="longitude" 
+        [markerDraggable]="true" (dragEnd)="markerDragEnd($event)" [iconUrl]="CustomarkerIcon">
+      </agm-marker>
+        <agm-marker *ngFor='let strutt of filteredMarkers'
+          [latitude]="strutt.latitude" [longitude]="strutt.longitude" (markerClick)='findHotelHere(strutt)'>
+        </agm-marker>
+        <agm-circle [latitude]="radiusLat" [longitude]="radiusLong" [radius]="radius" [fillColor]="'red'"
+          [circleDraggable]="false" [editable]="false" >
+        </agm-circle>
+      </agm-map>
+      <div class="div-tools">
+        <ion-img [src]="segnapostImg" id="segnaposto-tool" (click)="placeMarkers()"></ion-img>
+      </div>
+    </div>
+    <div class="select-div">
       <ion-progress-bar *ngIf='showLoader' [type]="'indeterminate'"></ion-progress-bar>
       <ion-item *ngIf='ionRegioneSelect'>
         <ion-label>Seleziona Regione</ion-label>
@@ -30,7 +45,8 @@
       <ion-item *ngIf='ionProvinceSelect'>
         <ion-label>Seleziona per Provincia</ion-label>
         <ion-select placeholder="Seleziona per provincia" [(ngModel)]='provinceName' (ionChange)="getH()">
-          <ion-select-option *ngFor='let province of allProvinceForRegion' [value]="province.sigla">{{ province.sigla }}</ion-select-option>
+          <ion-select-option *ngFor='let province of allProvinceForRegion' [value]="province.sigla">{{ province.sigla }}
+          </ion-select-option>
         </ion-select>
       </ion-item>
     </div>
